@@ -24,8 +24,9 @@ const words = [
 		<style lang="scss">
 		</style>
 	</head>
-	<body class="bg-gradient-to-tl from-gray-900 to-gray-600 bg-gradient-to-r">
-			<Typer preamble="Nate Codes" words={words}></Typer>
-			<Footer />
+	<body class="bg-gradient-to-tl from-gray-900 to-gray-600 bg-gradient-to-r h-full">
+		<div class="flex justify-center items-center h-screen">
+			<Typer preamble="Nate Codes" words={words} class="text-blue-400 font-inter font-bold w-72"></Typer>
+		</div>
 	</body>
 </html>

@@ -1,31 +1,68 @@
 ---
-const { preamble, words } = Astro.props;
+export interface Props {
+  preamble?: string,
+  words: string[],
+  class: string
+}
+const { preamble = "", words, class: classProp } : Props = Astro.props;
 ---
-<h1 class="text-blue-400">
+<h1 class={classProp}>
   {preamble}
-  <div id="typey-container">
+  <div id="typey-container" class="inline">
   { words[0].split('').map((el : string) => <span class="typity">{el}</span>) }
   </div>
 </h1>
+<ul id="words" class="hidden">
+  { words.map((word : string) => {return <li>{word}</li>}) }
+</ul>
 <script>
-    import { animate, stagger, timeline } from 'motion';
+    import { animate, stagger, timeline } from "motion"
 		const numSegments = document.querySelectorAll(".typity").length
+    const wordContainer : HTMLElement = document.getElementById('typey-container') as HTMLElement
+    const words = Array.from((document.getElementById("words") as Element).children).map((childEl : Element) => { return childEl.innerHTML})
+    let currentIndex = 0
+    let currentWord = words[currentIndex]
 
-		/**
-		 * Stagger offset (in seconds)
-		 * Decrease this to speed the animation up or increase
-		 * to slow it down.
-		 */
-		const offset = 0.1
-
-    const typeyType = () => {
-      const sequence = [
-        [".typity", { opacity: [1, 0] }, { offset: [0, 1], duration: 0, delay: stagger(offset), repeat: 0 }],
-        [".typity", { opacity: [0, 1] }, { offset: [0, 1], duration: 0, delay: stagger(offset, {from: "last"}), repeat: 0, at: "+3" }],
-      ];
-
-      const animation = timeline(sequence);
-
+    const makeDumbHTML : (word : string) => DocumentFragment = (word : string) => {
+      const fragment = new DocumentFragment()
+      word.split("").map((char) => {
+        const span = document.createElement('span')
+        span.className = 'typity'
+        const letter = document.createTextNode(char)
+        span.appendChild(letter)
+        fragment.append(span)
+      })
+      return fragment;
     }
-    setTimeout(typeyType, 1000);
+
+    const updateWord : (word : string) => void = (word : string) => {
+      wordContainer.innerHTML = ''
+      wordContainer.appendChild(makeDumbHTML(word))
+    }
+    // wordContainer.innerHTML = "<span class=\"typity\">L</span><span class=\"typity\">L</span><span class=\"typity\">L</span>"
+
+		const offset = 0.1 as unknown as number
+    const nextWord = () => {
+      if (currentIndex == words.length - 2)
+        currentIndex = -1
+      currentWord = words[++currentIndex]
+      updateWord(currentWord)
+    }
+    const typeWord = () => {
+      const word = words[currentIndex]
+      const sequence : Parameters<typeof timeline>[0] = [
+        [".typity", { opacity: [1, 0] }, { offset: [0, 1], duration: 0, delay: stagger(offset) }],
+        [".typity", { opacity: [0, 1] }, { offset: [0, 1], duration: 0, delay: stagger(offset, {from: "last"}), at: "+3" }],
+      ]
+
+      return timeline(sequence, { repeat: 0 })
+    }
+    const typeyType = () => {
+      const controls = typeWord();
+      controls.finished.then(() => {
+        nextWord()
+        typeyType()
+      })
+    }
+    typeyType()
 </script>
