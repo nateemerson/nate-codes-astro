@@ -1,0 +1,31 @@
+---
+const { preamble, words } = Astro.props;
+---
+<h1 class="text-blue-400">
+  {preamble}
+  <div id="typey-container">
+  { words[0].split('').map((el : string) => <span class="typity">{el}</span>) }
+  </div>
+</h1>
+<script>
+    import { animate, stagger, timeline } from 'motion';
+		const numSegments = document.querySelectorAll(".typity").length
+
+		/**
+		 * Stagger offset (in seconds)
+		 * Decrease this to speed the animation up or increase
+		 * to slow it down.
+		 */
+		const offset = 0.1
+
+    const typeyType = () => {
+      const sequence = [
+        [".typity", { opacity: [1, 0] }, { offset: [0, 1], duration: 0, delay: stagger(offset), repeat: 0 }],
+        [".typity", { opacity: [0, 1] }, { offset: [0, 1], duration: 0, delay: stagger(offset, {from: "last"}), repeat: 0, at: "+3" }],
+      ];
+
+      const animation = timeline(sequence);
+
+    }
+    setTimeout(typeyType, 1000);
+</script>
