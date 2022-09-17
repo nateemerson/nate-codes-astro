@@ -41,7 +41,8 @@ const { preamble = "", words, class: classProp } : Props = Astro.props;
     }
     // wordContainer.innerHTML = "<span class=\"typity\">L</span><span class=\"typity\">L</span><span class=\"typity\">L</span>"
 
-		const offset = 0.07 as unknown as number
+		const typeOffset = 0.08 as unknown as number
+		const deleteOffset = 0.04 as unknown as number
     const nextWord = () => {
       if (currentIndex == words.length - 2)
         currentIndex = -1
@@ -51,17 +52,19 @@ const { preamble = "", words, class: classProp } : Props = Astro.props;
     const typeWord = () => {
       const word = words[currentIndex]
       const sequence : Parameters<typeof timeline>[0] = [
-        [".typity", { opacity: [1, 0] }, { offset: [0, 1], duration: 0, delay: stagger(offset) }],
-        [".typity", { opacity: [0, 1] }, { offset: [0, 1], duration: 0, delay: stagger(offset, {from: "last"}), at: "+3" }],
+        [".typity", { opacity: [1, 0] }, { offset: [0, 1], duration: 0, delay: stagger(typeOffset) }],
+        [".typity", { opacity: [0, 1] }, { offset: [0, 1], duration: 0, delay: stagger(deleteOffset, {from: "last"}), at: "+3" }],
       ]
 
       return timeline(sequence, { repeat: 0 })
     }
     const typeyType = () => {
+      wordContainer.style.opacity = '1'
       const controls = typeWord();
       controls.finished.then(() => {
         nextWord()
-        typeyType()
+        wordContainer.style.opacity = '0'
+        setTimeout(typeyType, 1000)
       })
     }
     typeyType()
