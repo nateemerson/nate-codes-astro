@@ -1,0 +1,14 @@
+---
+
+interface markdownFrontmatter {
+  url: string;
+  publishDate: Date;
+  workInProgress: boolean;
+}
+
+const url = 'https://www.youtube.com/channel/UC0K8hu90G3iV6327ymEViNw';
+---
+
+<head>
+  <meta http-equiv="refresh" content={ `0; url=${ url }` } />
+</head>
